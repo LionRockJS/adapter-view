@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "name": "@lionrockjs/adapter-view-liquid",
+  "version": "1.0.0",
+  "description": "The Web Platform support using fastify",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LionRockJS/platform.git"
+  },
+  "keywords": [
+    "LionRockJS",
+    "web",
+    "fastify"
+  ],
+  "author": "Kojin Nakana",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LionRockJS/adapter-view/issues"
+  },
+  "homepage": "https://github.com/LionRockJS/adapter-view#readme",
+
+  "dependencies": {
+    "liquidjs": "^10.10.1"
+  }
+}
