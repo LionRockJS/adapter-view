@@ -1,16 +1,27 @@
-const { KohanaJS } = require('kohanajs');
-KohanaJS.initConfig(new Map([
-  ['liquidjs', require('../config/liquidjs')],
+import url from "node:url";
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '');
+console.log(__dirname);
+
+import { Central, CentralAdapterNode } from '@lionrockjs/central';
+import LiquidView from '../classes/LiquidView';
+import LiquidTags from '../classes/LiquidTags'
+import LiquidFilters from "../classes/LiquidFilters";
+import HelperConfig from '../classes/helpers/Config';
+import HelperLiquid from '../classes/helpers/Liquid';
+import Schema from '../classes/liquid-tags/Schema';
+import Section from '../classes/liquid-tags/Section';
+
+Central.initConfig(new Map([
+  ['liquidjs', await import('../config/liquidjs')],
 ]));
 
-KohanaJS.classPath.set('LiquidTags.js', require('../classes/LiquidTags'));
-KohanaJS.classPath.set('LiquidFilters.js', require('../classes/LiquidFilters'));
-KohanaJS.classPath.set('helpers/Config.js', require('../classes/helpers/Config'));
-KohanaJS.classPath.set('helpers/Liquid.js', require('../classes/helpers/Liquid'));
-KohanaJS.classPath.set('liquid-tags/Schema.js', require('../classes/liquid-tags/Schema'));
-KohanaJS.classPath.set('liquid-tags/Section.js', require('../classes/liquid-tags/Section'));
+Central.classPath.set('LiquidTags.mjs', LiquidTags);
+Central.classPath.set('LiquidFilters.mjs', LiquidFilters);
+Central.classPath.set('helpers/Config.mjs', HelperConfig);
+Central.classPath.set('helpers/Liquid.mjs', HelperLiquid);
+Central.classPath.set('liquid-tags/Schema.mjs', Schema);
+Central.classPath.set('liquid-tags/Section.mjs', Section);
 
-const LiquidView = require('../classes/LiquidView');
 
 describe('setup liquid', () => {
   test('setup', async () => {

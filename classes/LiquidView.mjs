@@ -42,8 +42,9 @@ export default class LiquidView extends View {
   }
 
   setupLiquidEngine() {
+    const root = [`${this.themePath}/snippets`, `${this.themePath}/templates`, `${Central.VIEW_PATH}/snippets`];
     const engine = new Liquid({
-      root: [`${this.themePath}/snippets`, `${this.themePath}/templates`, `${Central.VIEW_PATH}/snippets`],
+      root,
       extname: '.liquid',
       cache: !!Central.config.view?.cache,
       globals: this.data,

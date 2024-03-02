@@ -1,10 +1,9 @@
-const { KohanaJS } = require('kohanajs');
-const { Liquid } = require('liquidjs');
-const fs = require('fs');
-
-const TagSchema = KohanaJS.require('liquid-tags/Schema');
-const HelperLiquid = KohanaJS.require('helpers/Liquid');
-const HelperConfig = KohanaJS.require('helpers/Config');
+import fs from 'node:fs';
+import { Liquid } from 'liquidjs';
+import { Central } from '@lionrockjs/central';
+import TagSchema from './Schema';
+import HelperLiquid from "../helpers/Liquid.mjs";
+import HelperConfig from "../helpers/Config.mjs";
 
 // {% section %} have it's context, create another liquid instance to handle it.
 
@@ -24,7 +23,7 @@ export default class SectionTag {
     this.engine = new Liquid({
       root: `${this.themePath}/snippets/`,
       extname: '.liquid',
-      cache: !!KohanaJS.config.view.cache,
+      cache: !!Central.config.view.cache,
       globals: this.liquid.options.globals,
     });
     HelperLiquid.registerTags(this.engine);
