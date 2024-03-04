@@ -1,0 +1,40 @@
+{
+  "sections": {
+    "hero_BnB6y3": {
+      "type": "hero",
+      "blocks": {
+        "picture_7fyYFw": {
+          "type": "picture",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/skyscrapers-looking-up.jpg",
+            "caption": "Hello world"
+          }
+        },
+        "picture_KCczKq": {
+          "type": "picture",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/highway-tail-light-streaks.jpg",
+            "caption": "wonderful"
+          }
+        }
+      },
+      "block_order": [
+        "picture_7fyYFw",
+        "picture_KCczKq"
+      ],
+      "settings": {
+        "heading": "Lorem Lipsum"
+      }
+    },
+    "main": {
+      "type": "hero",
+      "settings": {
+        "heading": "Hello"
+      }
+    }
+  },
+  "order": [
+    "hero_BnB6y3",
+    "main"
+  ]
+}

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { Liquid } from 'liquidjs';
 import { Central } from '@lionrockjs/central';
-import TagSchema from './Schema';
+import TagSchema from './Schema.mjs';
 import HelperLiquid from "../helpers/Liquid.mjs";
 import HelperConfig from "../helpers/Config.mjs";
 

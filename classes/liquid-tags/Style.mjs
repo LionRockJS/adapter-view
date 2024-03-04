@@ -1,4 +1,4 @@
-export default class TagStyle {
+export default class {
   parse(token, remainTokens) {
     this.html = [];
     const stream = this.liquid.parser.parseStream(remainTokens)
