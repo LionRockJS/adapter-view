@@ -71,15 +71,19 @@ export default class LiquidView extends View {
   async render() {
     if(!this.jsonTemplate) return this.liquidRender();
 
-    const txt = fs.readFileSync(this.realPath, 'utf8');
-    const template = JSON.parse(txt);
-    const parseTemplate = Object.assign({}, template);
+    if(!View.caches[this.realPath]) View.caches[this.realPath] = JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
+    const template = (Central.config.view?.cache) ? View.caches[this.realPath] : JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
 
-    Object.keys(template.sections).map(async it => {
-      const view = await new LiquidView('sections/' + template.sections[it].type, this.data);
-      parseTemplate.sections[it] = await view.render();
-    });
+    const renders = {};
+    await Promise.all(
+      Object.keys(template.sections).map(async it => {
+        const section = template.sections[it];
+        section.id = it;
+        const view = await new LiquidView('sections/' + section.type, Object.assign({}, {section}, this.data));
+        renders[it] = await view.render();
+      })
+    )
 
-    return parseTemplate.order.map(it => parseTemplate.sections[it]);
+    return template.order.map(it => renders[it]);
   }
 }
