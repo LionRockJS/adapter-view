@@ -1,4 +1,6 @@
-const { KohanaJS } = require('kohanajs');
-KohanaJS.initConfig(new Map([
-  ['liquidjs', require('./config/liquidjs')],
+import { Central } from '@lionrockjs/central';
+import config from './config/liquidjs.mjs';
+
+Central.initConfig(new Map([
+  ['liquid', config],
 ]));

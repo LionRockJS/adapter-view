@@ -28,6 +28,7 @@ export default class LiquidView extends View {
     super(`${file}.liquid`, data);
 
     this.realPath = this.resolveView(file);
+    //theme path may not in central view folder, eg: view in modules
     this.themePath = (/[\\/]views[\\/]/i.test(this.realPath)) ?
       path.normalize(this.realPath.replace(/[\\/]views[\\/].+$/, '/views')) :
       path.normalize(path.dirname(this.realPath));
@@ -35,8 +36,6 @@ export default class LiquidView extends View {
     // load settings
     const settings = HelperConfig.loadSettings(this.themePath, this.sectionFile);
     Object.assign(this.data, { settings: settings.current });
-
-    //try to fix sometime View.caches is not defined error;
 
   }
 
@@ -57,6 +56,7 @@ export default class LiquidView extends View {
   }
 
   async liquidRender(){
+    //try to fix sometime View.caches is not defined error;
     if (!View.caches[this.realPath]) View.caches[this.realPath] = this.setupLiquidEngine();
 
     if(Central.config.view?.cache) {
