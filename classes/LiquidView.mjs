@@ -68,9 +68,7 @@ export default class LiquidView extends View {
     return View.caches[this.realPath].engine.render(View.caches[this.realPath].template, this.data);
   }
 
-  async render() {
-    if(!this.jsonTemplate) return this.liquidRender();
-
+  async jsonRender(){
     if(!View.caches[this.realPath]) View.caches[this.realPath] = JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
     const template = (Central.config.view?.cache) ? View.caches[this.realPath] : JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
 
@@ -85,5 +83,10 @@ export default class LiquidView extends View {
     )
 
     return template.order.map(it => renders[it]);
+  }
+
+  async render() {
+    if(!this.jsonTemplate) return this.liquidRender();
+    return this.jsonRender();
   }
 }
