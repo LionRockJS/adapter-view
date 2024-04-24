@@ -49,13 +49,15 @@ describe('setup liquid', () => {
   });
 
   test('setup with theme path', async () => {
-    const view = new LiquidView('layout/test', { content: ' world' }, `${__dirname}/views`);
+    Central.VIEW_PATH = `${__dirname}/views`;
+    const view = new LiquidView('layout/test', { content: ' world' });
     const result = await view.render();
     expect(result).toBe('hello world');
   });
 
   test('form tag', async () => {
-    const view = new LiquidView('layout/form', { type: 'activate_customer_password' }, `${__dirname}/views`);
+    Central.VIEW_PATH = `${__dirname}/views`;
+    const view = new LiquidView('layout/form', { type: 'activate_customer_password' });
     const result = await view.render();
     expect(result.replace(/\r?\n|\r/g, '')).toBe('<form method="post" accept-charset="UTF-8" action="https://my-shop.myshopify.com/account/activate" ><input name="form_type" type="hidden" value="block"/><input name="utf8" type="hidden" value="%E2%9C%93"/>  ...</form>');
   });
