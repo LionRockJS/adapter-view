@@ -1,7 +1,7 @@
 {
   "type": "module",
-  "name": "@lionrockjs/adapter-view-liquid",
-  "version": "1.0.0",
+  "name": "@lionrockjs/adapter-view-liquidjs",
+  "version": "0.0.1",
   "description": "The Web Platform support using fastify",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,6 @@
   "homepage": "https://github.com/LionRockJS/adapter-view#readme",
 
   "dependencies": {
-    "liquidjs": "^10.10.1"
+    "liquidjs": "^10.12.0"
   }
 }
