@@ -1,8 +1,8 @@
 {
   "type": "module",
   "name": "@lionrockjs/adapter-view-liquidjs",
-  "version": "0.0.1",
-  "description": "The Web Platform support using fastify",
+  "version": "0.0.2",
+  "description": "The LionRockJS Web Platform support using LiquidJS",
   "main": "index.js",
   "scripts": {
     "test": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --coverage"
@@ -14,7 +14,7 @@
   "keywords": [
     "LionRockJS",
     "web",
-    "fastify"
+    "liquidjs"
   ],
   "author": "Kojin Nakana",
   "license": "MIT",
