@@ -2,7 +2,7 @@ import url from "node:url";
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '');
 console.log(__dirname);
 
-import { Central, CentralAdapterNode } from '@lionrockjs/central';
+import { Central } from '@lionrockjs/central';
 import LiquidView from '../classes/LiquidView';
 import LiquidTags from '../classes/LiquidTags'
 import LiquidFilters from "../classes/LiquidFilters";
@@ -72,5 +72,11 @@ describe('setup liquid', () => {
     const view = new LiquidView(`${__dirname}/views/layout/test2`, { title: "foo"});
     const result = await view.render();
     expect(result.replace(/\r?\n|\r/g, '')).toBe('<h1>foo</h1><div>    <div>hello</div></div>');
+  })
+
+  test('json', async() =>{
+    const view  = new LiquidView(`${__dirname}/views/templates/test`, {item: {title: 'foo', description: 'bar'}});
+    const result = await view.render();
+    expect(result).toBe('hero Hellofoo\nhero Lorem LipsumHello worldwonderfulfoo');
   })
 });

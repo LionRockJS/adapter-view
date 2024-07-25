@@ -8,6 +8,7 @@ export default {
     {name:'javascript', tag: Tags.tag },
     {name:'form', tag: Tags.form },
     {name:'paginate', tag: Tags.paginate },
+    {name:'schema', tag: Tags.Schema },
   ],
 
   filters: [

@@ -75,14 +75,18 @@ export default class LiquidView extends View {
     const renders = {};
     await Promise.all(
       Object.keys(template.sections).map(async it => {
-        const section = template.sections[it];
+        const section = {};
+        const data = template.sections[it];
+        section.type = data.type;
+        section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
+        section.settings = data.settings;
         section.id = it;
         const view = await new LiquidView('sections/' + section.type, Object.assign({}, {section}, this.data));
         renders[it] = await view.render();
       })
     )
 
-    return template.order.map(it => renders[it]);
+    return template.order.map(it => renders[it]).join('\n');
   }
 
   async render() {
