@@ -1,6 +1,5 @@
 import url from "node:url";
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '');
-console.log(__dirname);
 
 import { Central } from '@lionrockjs/central';
 import LiquidView from '../classes/LiquidView';
@@ -79,4 +78,24 @@ describe('setup liquid', () => {
     const result = await view.render();
     expect(result).toBe('hero Hellofoo\nhero Lorem LipsumHello worldwonderfulfoo');
   })
+
+  test('defaultFile', async() =>{
+    const view = new LiquidView(`${__dirname}/views/layout/test99`, { title: "foo"}, `${__dirname}/views/layout/test2`);
+    const result = await view.render();
+    expect(result.replace(/\r?\n|\r/g, '')).toBe('<h1>foo</h1><div>    <div>hello</div></div>');
+    expect(view.file).toBe(`${__dirname}/views/layout/test2.liquid`);
+
+    const view2  = new LiquidView(`${__dirname}/views/templates/test`, {item: {title: 'foo', description: 'bar'}});
+    const result2 = await view2.render();
+    expect(result2).toBe('hero Hellofoo\nhero Lorem LipsumHello worldwonderfulfoo');
+    expect(view2.file).toBe(`${__dirname}/views/templates/test.json`);
+
+    const view3  = new LiquidView(`${__dirname}/views/templates/test77`, {item: {title: 'foo', description: 'bar'}}, `${__dirname}/views/templates/test`);
+    const result3 = await view3.render();
+    expect(result3).toBe('hero Hellofoo\nhero Lorem LipsumHello worldwonderfulfoo');
+
+    const view4 = new LiquidView(`${__dirname}/views/layout/test99`, { title: "foo"});
+    const result4 = await view4.render();
+    expect(result4.replace(/\r?\n|\r/g, '')).toBe('<h1>foo</h1><div>    <div>hello</div></div>');
+  });
 });

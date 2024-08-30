@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { View } from "@lionrockjs/mvc";
-import { Central } from "@lionrockjs/central";
+import { Central, View } from "@lionrockjs/central";
 import { Liquid } from 'liquidjs';
 
 import HelperConfig from './helpers/Config.mjs';
@@ -12,22 +11,30 @@ export default class LiquidView extends View {
   themePath = "";
   jsonTemplate = false;
 
-  resolveView(file) {
+  resolveView(file, default_file="") {
     let fetchedView;
     try{
       fetchedView = Central.resolveView(file+ '.liquid');
+      this.file = file + '.liquid';
     }catch(e){
-      fetchedView = Central.resolveView(file + '.json');
-      this.file = file + '.json';
-      this.jsonTemplate = true;
+      try{
+        fetchedView = Central.resolveView(file + '.json');
+        this.file = file + '.json';
+        this.jsonTemplate = true;
+      }catch(e){
+        if(default_file === "")throw e;
+        fetchedView = this.resolveView(default_file);
+        const ext = this.file.split('.').pop();
+        Central.viewPath.set(file + '.' + ext, fetchedView);
+      }
     }
     return fetchedView;
   }
 
-  constructor(file, data = {}) {
-    super(`${file}.liquid`, data);
+  constructor(file, data = {}, default_file="") {
+    super(`${file}.liquid`, data, default_file);
 
-    this.realPath = this.resolveView(file);
+    this.realPath = this.resolveView(file, default_file);
     //theme path may not in central view folder, eg: view in modules
     this.themePath = (/[\\/]views[\\/]/i.test(this.realPath)) ?
       path.normalize(this.realPath.replace(/[\\/]views[\\/].+$/, '/views')) :
@@ -73,6 +80,8 @@ export default class LiquidView extends View {
     const template = (Central.config.view?.cache) ? View.caches[this.realPath] : JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
 
     const renders = {};
+    const engine = new Liquid();
+
     await Promise.all(
       Object.keys(template.sections).map(async it => {
         const section = {};
@@ -81,6 +90,22 @@ export default class LiquidView extends View {
         section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
         section.settings = data.settings;
         section.id = it;
+
+        //regexp test email
+
+        //replace liquid in section settings
+        await Promise.all(
+          Object.keys(section.settings).map(async key => {
+            //regexp check double curly braces
+            if(/{{.*}}/.test(section.settings[key])){
+              section.settings[key] = await engine.render(
+                engine.parse(section.settings[key]),
+                this.data
+              );
+            }
+          })
+        )
+
         const view = await new LiquidView('sections/' + section.type, Object.assign({}, {section}, this.data));
         renders[it] = await view.render();
       })
