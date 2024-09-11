@@ -4,6 +4,7 @@
  */
 import pluralize from 'pluralize';
 pluralize.addPluralRule('person', 'persons');
+import HelperTranslate from './helpers/translate.mjs';
 
 const camelCase = str => str
   .replace(/-/g, ' ')
@@ -12,7 +13,7 @@ const camelCase = str => str
   .replace(/^(.)/, $1 => $1.toUpperCase());
 
 export default {
-  t: v => `t(${v})`,
+  t: v => `${HelperTranslate.t(v)}`,
   money: v => new Intl.NumberFormat('en', { style: 'currency', currency: 'HKD' }).format(v),
   moneyWithoutCurrency: v => new Intl.NumberFormat('en', { style: 'decimal' }).format(v),
   camelcase: camelCase,

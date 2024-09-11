@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@lionrockjs/adapter-view-liquidjs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "The LionRockJS Web Platform support using LiquidJS",
   "main": "index.js",
   "scripts": {

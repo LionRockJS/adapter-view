@@ -30,4 +30,15 @@ export default {
     {name:'format_address', func: Filters.format_address },
     {name:'console_log', func: v => console.log(v) },
   ],
+  translates: {
+    'en': {
+      'language': 'English',
+    },
+    'zh-hant': {
+      'language': '繁體中文',
+    },
+    'zh-hans': {
+      'language': '简体中文',
+    }
+  }
 };
