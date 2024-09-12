@@ -54,7 +54,7 @@ export default class LiquidView extends View {
       globals: this.data,
     });
 
-    HelperLiquid.registerFilterTags(engine);
+    HelperLiquid.registerFilterTags(engine, this.data);
 
     return {
       engine,
