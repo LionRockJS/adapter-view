@@ -13,7 +13,7 @@ import LiquidTagsStyle from './classes/liquid-tags/Style.mjs';
 import LiquidTagsTag from './classes/liquid-tags/Tag.mjs';
 import LiquidHelperConfig from './classes/helpers/Config.mjs';
 import LiquidHelperLiquid from './classes/helpers/Liquid.mjs';
-import HelperTranslate from './classes/helpers/translate.mjs';
+import HelperTranslate from './classes/helpers/Translate.mjs';
 
 export default {
   dirname
