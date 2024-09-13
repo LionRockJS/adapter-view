@@ -75,6 +75,20 @@ export default class LiquidView extends View {
     return View.caches[this.realPath].engine.render(View.caches[this.realPath].template, this.data);
   }
 
+  static async parseSettings(engine, node, data){
+    await Promise.all(
+      Object.keys(node.settings).map(async key => {
+        //regexp check double curly braces
+        if(/{{.*}}/.test(node.settings[key])){
+          node.settings[key] = await engine.render(
+            engine.parse(node.settings[key]),
+            data
+          );
+        }
+      })
+    )
+  }
+
   async jsonRender(){
     if(!View.caches[this.realPath]) View.caches[this.realPath] = JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
     const template = (Central.config.view?.cache) ? View.caches[this.realPath] : JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
@@ -94,16 +108,11 @@ export default class LiquidView extends View {
         //regexp test email
 
         //replace liquid in section settings
+        await LiquidView.parseSettings(engine, section, this.data);
+
+        //blocks settings
         await Promise.all(
-          Object.keys(section.settings).map(async key => {
-            //regexp check double curly braces
-            if(/{{.*}}/.test(section.settings[key])){
-              section.settings[key] = await engine.render(
-                engine.parse(section.settings[key]),
-                this.data
-              );
-            }
-          })
+          section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
         )
 
         const view = await new LiquidView('sections/' + section.type, Object.assign({}, {section}, this.data));
