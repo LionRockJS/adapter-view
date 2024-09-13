@@ -12,7 +12,6 @@ export default {
   ],
 
   filters: [
-    {name:'t', func: Filters.t },
     {name:'asset_url', func: Filters.asset_url },
     {name:'shopify_asset_url', func: Filters.shopify_asset_url },
     {name:'stylesheet_tag', func: Filters.stylesheet_tag },

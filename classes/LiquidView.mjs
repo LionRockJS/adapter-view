@@ -14,12 +14,12 @@ export default class LiquidView extends View {
   resolveView(file, default_file="") {
     let fetchedView;
     try{
-      fetchedView = Central.resolveView(file+ '.liquid');
       this.file = file + '.liquid';
+      fetchedView = Central.resolveView(this.file);
     }catch(e){
       try{
-        fetchedView = Central.resolveView(file + '.json');
         this.file = file + '.json';
+        fetchedView = Central.resolveView(this.file);
         this.jsonTemplate = true;
       }catch(e){
         if(default_file === "")throw e;
@@ -36,8 +36,8 @@ export default class LiquidView extends View {
 
     this.realPath = this.resolveView(file, default_file);
     //theme path may not in central view folder, eg: view in modules
-    this.themePath = (/[\\/]views[\\/]/i.test(this.realPath)) ?
-      path.normalize(this.realPath.replace(/[\\/]views[\\/].+$/, '/views')) :
+    this.themePath = (/[\\/]views[\\/](layout|templates|sections)[\\/]/i.test(this.realPath)) ?
+      path.normalize(this.realPath.replace(/[\\/]views[\\/](layout|templates|sections)[\\/].+$/, '/views')) :
       path.normalize(path.dirname(this.realPath));
 
     // load settings
