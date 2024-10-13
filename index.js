@@ -1,5 +1,7 @@
-import url from "node:url";
-const dirname = url.fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '');
+export default {
+  filename: import.meta.url,
+  configs: ['liquidjs']
+}
 
 import LiquidView from './classes/LiquidView.mjs';
 import LiquidTags from './classes/LiquidTags.mjs';
@@ -14,10 +16,6 @@ import LiquidTagsTag from './classes/liquid-tags/Tag.mjs';
 import LiquidHelperConfig from './classes/helpers/Config.mjs';
 import LiquidHelperLiquid from './classes/helpers/Liquid.mjs';
 import HelperTranslate from './classes/helpers/Translate.mjs';
-
-export default {
-  dirname
-}
 
 export{
   LiquidView,

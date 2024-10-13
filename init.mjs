@@ -1,7 +1,4 @@
-import { Central } from '@lionrockjs/central';
-import config from './config/liquidjs.mjs?';
-import {HelperTranslate} from "./index.js";
+import { View } from '@lionrockjs/central';
 
-await Central.initConfig(new Map([
-  ['liquidjs', config],
-]));
+import LiquidView from "./classes/LiquidView.mjs";
+View.DefaultViewClass = LiquidView;
