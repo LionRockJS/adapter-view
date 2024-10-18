@@ -39,6 +39,6 @@ export default class Translate{
       Central.log('translate key not found : '+ key);
       return "";
     }
-    return languageKeys.get(key);
+    return languageKeys.get(key) || "";
   }
 }

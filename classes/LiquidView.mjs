@@ -46,33 +46,18 @@ export default class LiquidView extends View {
 
   }
 
-  setupLiquidEngine(rootFolder) {
+  async liquidRender(){
     const engine = new Liquid({
-      root: rootFolder ?? [`${this.themePath}/snippets`, `${this.themePath}/templates`, `${Central.VIEW_PATH}/snippets`],
+      root: [`${this.themePath}/snippets`, `${this.themePath}/templates`, `${Central.VIEW_PATH}/snippets`],
       extname: '.liquid',
       cache: !!Central.config.view?.cache,
       globals: this.data,
     });
 
     HelperLiquid.registerFilterTags(engine, this.data);
+    const template = engine.parse(fs.readFileSync(this.realPath, 'utf8'));
 
-    return {
-      engine,
-      template: engine.parse(fs.readFileSync(this.realPath, 'utf8')),
-    }
-  }
-
-  async liquidRender(){
-    //try to fix sometime View.caches is not defined error;
-    if (!View.caches[this.realPath]) View.caches[this.realPath] = this.setupLiquidEngine();
-
-    if(Central.config.view?.cache) {
-      const {engine, template} = View.caches[this.realPath];
-      return engine.render(template, this.data);
-    }
-
-    View.caches[this.realPath] = this.setupLiquidEngine();
-    return View.caches[this.realPath].engine.render(View.caches[this.realPath].template, this.data);
+    return engine.render(template, this.data);
   }
 
   static async parseSettings(engine, node, data){
@@ -90,8 +75,7 @@ export default class LiquidView extends View {
   }
 
   async jsonRender(){
-    if(!View.caches[this.realPath]) View.caches[this.realPath] = JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
-    const template = (Central.config.view?.cache) ? View.caches[this.realPath] : JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
+    const template =  JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
 
     const renders = {};
     const engine = new Liquid();

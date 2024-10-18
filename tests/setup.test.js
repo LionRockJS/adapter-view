@@ -10,7 +10,7 @@ import HelperLiquid from '../classes/helpers/Liquid';
 import Schema from '../classes/liquid-tags/Schema';
 import Section from '../classes/liquid-tags/Section';
 
-Central.initConfig(new Map([
+await Central.initConfig(new Map([
   ['liquidjs', await import('../config/liquidjs')],
 ]));
 
@@ -37,13 +37,13 @@ describe('setup liquid', () => {
 
   test('filters', async () => {
     const view = new LiquidView(`${__dirname}/views/layout/test1`, {
-      text: ' world', money: 100, camelCase: 'Not One Less', script: 'fd', css: 'fff', url: 'foo', obj: { foo: 'bar' }, exp: true, exp2: false,
+      text: 'language', money: 100, camelCase: 'Not One Less', script: 'fd', css: 'fff', url: 'foo', obj: { foo: 'bar' }, exp: true, exp2: false,
     });
 
     const result = await view.render();
 
     expect(result.replace(/\r?\n|\r/g, '')).toBe(
-      'helloHK$100.00100NotOneLess<script src="fd" type="text/javascript"></script><link type="text/css" href="fff" rel="stylesheet"/>/assets/foo//cdn.shopify.com/s/shopify/foo{"foo":"bar"}TRUEFALSE',
+      'helloEnglishHK$100.00100NotOneLess<script src="fd" type="text/javascript"></script><link type="text/css" href="fff" rel="stylesheet"/>/assets/foo//cdn.shopify.com/s/shopify/foo{"foo":"bar"}TRUEFALSE',
     );
   });
 
