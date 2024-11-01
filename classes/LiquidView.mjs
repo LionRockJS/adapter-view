@@ -76,6 +76,7 @@ export default class LiquidView extends View {
 
   async jsonRender(){
     const template =  JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
+    this.data._sections = template.sections;
 
     const renders = {};
     const engine = new Liquid();
@@ -85,6 +86,8 @@ export default class LiquidView extends View {
         const section = {};
         const data = template.sections[it];
         section.type = data.type;
+        if(data.type === 'head')return;//do not render head type
+
         section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
         section.settings = data.settings;
         section.id = it;
