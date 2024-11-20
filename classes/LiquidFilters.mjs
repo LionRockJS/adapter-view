@@ -2,26 +2,14 @@
  // Usage: {{ 1 | add: 2, 3 }}
  engine.registerFilter('add', (initial, arg1, arg2) => initial + arg1 + arg2)
  */
-import pluralize from 'pluralize';
-pluralize.addPluralRule('person', 'persons');
-
-const camelCase = str => str
-  .replace(/-/g, ' ')
-  .replace(/\s(.)/g, $1 => $1.toUpperCase())
-  .replace(/\s/g, '')
-  .replace(/^(.)/, $1 => $1.toUpperCase());
 
 export default {
   money: v => new Intl.NumberFormat('en', { style: 'currency', currency: 'HKD' }).format(v),
   money_without_currency: v => new Intl.NumberFormat('en', { style: 'decimal' }).format(v),
-  camelcase: camelCase,
   script_tag: v => `<script src="${v}" type="text/javascript"></script>`,
   stylesheet_tag: v => `<link type="text/css" href="${v}" rel="stylesheet"/>`,
   asset_url: v => `/assets/${v}`,
-  shopify_asset_url: v => `//cdn.shopify.com/s/shopify/${v}`,
   if: (v, arg1, arg2) => (v ? arg1 : arg2),
-  singular: v => pluralize.singular(v),
-  plural: v => pluralize.plural(v),
   within: (v, collection) => `/collections/${collection.handle}${v}`,
   to_time: v => v ? Math.floor(new Date(/\+/.test(v) ? v: v+'Z').getTime() / 1000) : '',
   console_log: v => console.log(v),
