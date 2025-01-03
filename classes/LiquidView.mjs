@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Central, View } from "@lionrockjs/central";
 import { Liquid } from 'liquidjs';
+import expand from 'emmet';
 
 import HelperConfig from './helpers/Config.mjs';
 import HelperLiquid from './helpers/Liquid.mjs';
@@ -86,7 +87,10 @@ export default class LiquidView extends View {
         const section = {};
         const data = template.sections[it];
         section.type = data.type;
-        if(/^#/.test(data.type))return;//do not render # type
+        //do not render # type
+        if(/^#/.test(data.type))return;
+        // do not render if not in order
+        if(!template.order.includes(it))return;
 
         section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
         section.settings = data.settings;
@@ -107,7 +111,18 @@ export default class LiquidView extends View {
       })
     )
 
-    return template.order.map(it => renders[it]).join('\n');
+    let result = template.order.map(it => renders[it]).join('\n');
+
+    if(template.wrapper){
+      const wrapper = expand(template.wrapper+'>span.internal_content');
+      result = wrapper.replace('<span class="internal_content"></span>', result);
+    }
+
+    if(Central.config.system?.debug){
+      return `<!-- view file: ${this.file} -->\n` + result;
+    }
+
+    return result;
   }
 
   async render() {
