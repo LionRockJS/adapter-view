@@ -15,13 +15,14 @@ export default class LiquidView extends View {
   resolveView(file, default_file="") {
     let fetchedView;
     try{
-      this.file = file + '.liquid';
+      this.file = file + '.json';
       fetchedView = Central.resolveView(this.file);
+      this.jsonTemplate = true;
     }catch(e){
       try{
-        this.file = file + '.json';
+        this.file = file + '.liquid';
         fetchedView = Central.resolveView(this.file);
-        this.jsonTemplate = true;
+        this.jsonTemplate = false;
       }catch(e){
         if(default_file === "")throw e;
         fetchedView = this.resolveView(default_file);
@@ -44,7 +45,6 @@ export default class LiquidView extends View {
     // load settings
     const settings = HelperConfig.loadSettings(this.themePath, this.sectionFile);
     Object.assign(this.data, { settings: settings.current });
-
   }
 
   async liquidRender(){
@@ -65,7 +65,7 @@ export default class LiquidView extends View {
     await Promise.all(
       Object.keys(node.settings).map(async key => {
         //regexp check double curly braces
-        if(/{{.*}}/.test(node.settings[key])){
+        if(/{{.*}}|{%.*%}/.test(node.settings[key])){
           node.settings[key] = await engine.render(
             engine.parse(node.settings[key]),
             data
@@ -114,7 +114,8 @@ export default class LiquidView extends View {
     let result = template.order.map(it => renders[it]).join('\n');
 
     if(template.wrapper){
-      const wrapper = expand(template.wrapper+'>span.internal_content');
+      const escapeWrapper = template.wrapper.replaceAll('\\[', '--sbrk--').replaceAll('\\]', '--ebrk--')
+      const wrapper = expand(escapeWrapper+'>span.internal_content').replaceAll('--sbrk--', '[').replaceAll('--ebrk--', ']');
       result = wrapper.replace('<span class="internal_content"></span>', result);
     }
 
