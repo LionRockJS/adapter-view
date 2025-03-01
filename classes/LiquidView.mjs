@@ -62,6 +62,13 @@ export default class LiquidView extends View {
   }
 
   static async parseSettings(engine, node, data){
+    if(/{{.*}}|{%.*%}/.test(node.type)){
+      node.type = await engine.render(
+        engine.parse(node.type),
+        data
+      );
+    }
+
     await Promise.all(
       Object.keys(node.settings).map(async key => {
         //regexp check double curly braces
@@ -72,7 +79,7 @@ export default class LiquidView extends View {
           );
         }
       })
-    )
+    );
   }
 
   async jsonRender(){
