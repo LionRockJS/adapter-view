@@ -72,10 +72,20 @@ export default class LiquidView extends View {
     for(const key of Object.keys(node.settings)){
       //regexp check double curly braces
       if(/{{.*}}|{%.*%}/.test(node.settings[key])){
-        node.settings[key] = await engine.render(
+        let text = await engine.render(
           engine.parse(node.settings[key]),
           data
         );
+
+        //2nd pass for array
+        if(/{{.*}}|{%.*%}/.test(text)){
+          text = await engine.render(
+            engine.parse(text),
+            data
+          );
+        }
+
+        node.settings[key] = text;
       }
     }
   }
