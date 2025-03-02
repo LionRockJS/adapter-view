@@ -69,17 +69,15 @@ export default class LiquidView extends View {
       );
     }
 
-    await Promise.all(
-      Object.keys(node.settings).map(async key => {
-        //regexp check double curly braces
-        if(/{{.*}}|{%.*%}/.test(node.settings[key])){
-          node.settings[key] = await engine.render(
-            engine.parse(node.settings[key]),
-            data
-          );
-        }
-      })
-    );
+    for(const key of Object.keys(node.settings)){
+      //regexp check double curly braces
+      if(/{{.*}}|{%.*%}/.test(node.settings[key])){
+        node.settings[key] = await engine.render(
+          engine.parse(node.settings[key]),
+          data
+        );
+      }
+    }
   }
 
   async jsonRender(){
@@ -89,34 +87,32 @@ export default class LiquidView extends View {
     const renders = {};
     const engine = new Liquid();
 
-    await Promise.all(
-      Object.keys(template.sections).map(async it => {
-        const section = {};
-        const data = template.sections[it];
-        section.type = data.type;
-        //do not render # type
-        if(/^#/.test(data.type))return;
-        // do not render if not in order
-        if(!template.order.includes(it))return;
+    for(const key of Object.keys(template.sections)){
+      const section = {};
+      const data = template.sections[key];
+      section.type = data.type;
+      //do not render # type
+      if(/^#/.test(data.type))return;
+      // do not render if not in order
+      if(!template.order.includes(key))return;
 
-        section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
-        section.settings = data.settings;
-        section.id = it;
+      section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
+      section.settings = data.settings;
+      section.id = key;
 
-        //regexp test email
+      //regexp test email
 
-        //replace liquid in section settings
-        await LiquidView.parseSettings(engine, section, this.data);
+      //replace liquid in section settings
+      await LiquidView.parseSettings(engine, section, this.data);
 
-        //blocks settings
-        await Promise.all(
-          section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
-        )
+      //blocks settings
+      await Promise.all(
+        section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
+      )
 
-        const view = await new LiquidView('sections/' + section.type, Object.assign({}, {section}, this.data));
-        renders[it] = await view.render();
-      })
-    )
+      const view = await new LiquidView('sections/' + section.type, Object.assign({}, this.data, {section}));
+      renders[key] = await view.render();
+    }
 
     let result = template.order.map(it => renders[it]).join('\n');
 
