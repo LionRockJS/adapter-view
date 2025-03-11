@@ -44,7 +44,7 @@ export default class LiquidView extends View {
 
     // load settings
     const settings = HelperConfig.loadSettings(this.themePath, this.sectionFile);
-    Object.assign(this.data, { settings: settings.current });
+    Object.assign(this.data, { settings: settings.current, meta: {} });
   }
 
   async liquidRender(){
@@ -98,19 +98,37 @@ export default class LiquidView extends View {
     const engine = new Liquid();
 
     for(const key of Object.keys(template.sections)){
-      const section = {};
-      const data = template.sections[key];
-      section.type = data.type;
-      //do not render # type
-      if(/^#/.test(data.type))return;
+      const section = template.sections[key];
+
       // do not render if not in order
-      if(!template.order.includes(key))return;
+      if(!template.order.includes(key))continue;
 
-      section.blocks = (data.block_order ?? []).map(it => data.blocks[it]);
-      section.settings = data.settings;
+      //merge "#" type settings to this.data.meta
+      if(/^#/.test(section.type)){
+        const metaKey = section.type.replace('#', '');
+        let metaEntry = this.data.meta[metaKey];
+
+        //value in this.data.meta object is a set, if not exist, create one
+        if(!metaEntry){
+          metaEntry = new Set()
+          this.data.meta[metaKey] = metaEntry;
+        }
+
+        //data.settings.value is array, loop and add to set
+        if(Array.isArray(section.settings.value)){
+          section.settings.value.forEach(it => metaEntry.add(it));
+        }
+
+        //if data.settings.value is object, merge it
+        if(typeof section.settings.value === 'object'){
+          Object.assign(metaEntry, section.settings.value);
+        }
+        continue;
+      }
+
+      section.blocks = (section.block_order ?? []).map(it => section.blocks[it]);
+      section.settings = section.settings;
       section.id = key;
-
-      //regexp test email
 
       //replace liquid in section settings
       await LiquidView.parseSettings(engine, section, this.data);
