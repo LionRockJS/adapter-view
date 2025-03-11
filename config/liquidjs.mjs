@@ -28,6 +28,7 @@ export default {
     {name:'map_get', func: Filters.map_get },
     {name:'format_address', func: Filters.format_address },
     {name:'console_log', func: v => console.log(v) },
+    {name:'md5', func: Filters.md5 },
   ],
   translates: {
     'en': {
