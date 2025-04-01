@@ -44,7 +44,8 @@ export default class LiquidView extends View {
 
     // load settings
     const settings = HelperConfig.loadSettings(this.themePath, this.sectionFile);
-    Object.assign(this.data, { settings: settings.current, meta: {} });
+    if(this.data.meta === undefined)this.data.meta = {};
+    Object.assign(this.data, { settings: settings.current });
   }
 
   async liquidRender(){
