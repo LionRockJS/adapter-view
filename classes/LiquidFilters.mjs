@@ -18,4 +18,6 @@ export default {
   map_get: (v, arg1) => v.get(arg1),
   format_address: v => `<p>${v.first_name} ${v.last_name}<br>${v.address1}<br>${v.city}<br>${v.province}<br>${v.country}</p>`,
   md5: v => crypto.createHash('md5').update(v).digest('hex'),
+  random: v => Math.floor(Math.random() * v),
+  uuid: v => crypto.randomUUID(),
 };
