@@ -48,13 +48,17 @@ export default class LiquidView extends View {
     Object.assign(this.data, { settings: settings.current });
   }
 
-  async liquidRender(){
-    const engine = new Liquid({
-      root: [`${Central.VIEW_PATH}/snippets`, `${this.themePath}/snippets`, `${this.themePath}/templates`],
+  getEngine(){
+    return new Liquid({
+      root: [`${Central.VIEW_PATH}/snippets`, `${this.themePath}/snippets`, `${this.themePath}/templates`, `${this.themePath}/sections`],
       extname: '.liquid',
       cache: !!Central.config.view?.cache,
       globals: this.data,
-    });
+    })
+  }
+
+  async liquidRender(){
+    const engine = this.getEngine();
 
     HelperLiquid.registerFilterTags(engine, this.data);
     const template = engine.parse(fs.readFileSync(this.realPath, 'utf8'));
@@ -96,7 +100,7 @@ export default class LiquidView extends View {
     this.data._sections = template.sections;
 
     const renders = {};
-    const engine = new Liquid();
+    const engine = this.getEngine();
 
     for(const key of Object.keys(template.sections)){
       const section = template.sections[key];
@@ -128,7 +132,6 @@ export default class LiquidView extends View {
       }
 
       section.blocks = (section.block_order ?? []).map(it => section.blocks[it]);
-      section.settings = section.settings;
       section.id = key;
 
       //replace liquid in section settings

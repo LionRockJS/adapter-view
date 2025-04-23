@@ -29,6 +29,8 @@ export default {
     {name:'format_address', func: Filters.format_address },
     {name:'console_log', func: v => console.log(v) },
     {name:'md5', func: Filters.md5 },
+    {name:'random', func: Filters.random },
+    {name:'uuid', func: Filters.uuid },
   ],
   translates: {
     'en': {
