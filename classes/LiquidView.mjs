@@ -95,8 +95,16 @@ export default class LiquidView extends View {
     }
   }
 
+  readJSON(file){
+    try{
+      return JSON.parse(fs.readFileSync(file, 'utf8'))
+    }catch(e){
+      throw new Error(`Error parsing JSON file: ${file}: ${e.message}`);
+    }
+  }
+
   async jsonRender(){
-    const template =  JSON.parse(fs.readFileSync(this.realPath, 'utf8'));
+    const template =  this.readJSON(this.realPath);
     this.data._sections = template.sections;
 
     const renders = {};
@@ -149,9 +157,20 @@ export default class LiquidView extends View {
     let result = template.order.map(it => renders[it]).join('\n');
 
     if(template.wrapper){
-      const escapeWrapper = template.wrapper.replaceAll('\\[', '--sbrk--').replaceAll('\\]', '--ebrk--')
-      const wrapper = expand(escapeWrapper+'>span.internal_content').replaceAll('--sbrk--', '[').replaceAll('--ebrk--', ']');
-      result = wrapper.replace('<span class="internal_content"></span>', result);
+      if(/{{.*}}|{%.*%}/.test(template.wrapper)){
+        template.wrapper = await engine.render(
+            engine.parse(template.wrapper),
+            this.data
+        );
+      }
+
+      try{
+        const escapeWrapper = template.wrapper.replaceAll('\\[', '--sbrk--').replaceAll('\\]', '--ebrk--')
+        const wrapper = expand(escapeWrapper+'>span.internal_content').replaceAll('--sbrk--', '[').replaceAll('--ebrk--', ']');
+        result = wrapper.replace('<span class="internal_content"></span>', result);
+      }catch(e){
+        throw new Error(`Error parsing JSON template wrapper: ${this.realPath}: ${e.message}`);
+      }
     }
 
     if(Central.config.system?.debug){
