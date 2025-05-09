@@ -150,8 +150,12 @@ export default class LiquidView extends View {
         section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
       )
 
-      const view = await new LiquidView('sections/' + section.type, Object.assign({}, this.data, {section}));
-      renders[key] = await view.render();
+      try{
+        const view = await new LiquidView('sections/' + section.type, Object.assign({}, this.data, {section}));
+        renders[key] = await view.render();
+      }catch(e){
+        throw new Error(`${this.realPath} \n Error rendering section: ${section.type}: ${e.message}`);
+      }
     }
 
     let result = template.order.map(it => renders[it]).join('\n');
