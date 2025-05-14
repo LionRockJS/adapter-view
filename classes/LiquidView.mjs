@@ -105,7 +105,7 @@ export default class LiquidView extends View {
 
   async jsonRender(){
     const template =  this.readJSON(this.realPath);
-    this.data._sections = template.sections;
+
     if(!template.order || template.order.length === 0)return;
     const renders = {};
     const engine = this.getEngine();
@@ -141,7 +141,7 @@ export default class LiquidView extends View {
       //replace liquid in section settings
       await LiquidView.parseSettings(engine, section, this.data);
 
-      if(section.block_order && Array.isArray(section.block_order) && block_order.length > 0){
+      if(section.block_order && Array.isArray(section.block_order) && section.block_order.length > 0){
         section.blocks = section.block_order.map(it => section.blocks[it]);
 
         //blocks settings
