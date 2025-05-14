@@ -106,15 +106,14 @@ export default class LiquidView extends View {
   async jsonRender(){
     const template =  this.readJSON(this.realPath);
     this.data._sections = template.sections;
-
+    if(!template.order || template.order.length === 0)return;
     const renders = {};
     const engine = this.getEngine();
 
-    for(const key of Object.keys(template.sections)){
+    for(let key of template.order){
       const section = template.sections[key];
-
-      // do not render if not in order
-      if(!template.order.includes(key))continue;
+      if(!section)continue;
+      section.id = key;
 
       //merge "#" type settings to this.data.meta
       if(/^#/.test(section.type)){
@@ -139,16 +138,17 @@ export default class LiquidView extends View {
         continue;
       }
 
-      section.blocks = (section.block_order ?? []).map(it => section.blocks[it]);
-      section.id = key;
-
       //replace liquid in section settings
       await LiquidView.parseSettings(engine, section, this.data);
 
-      //blocks settings
-      await Promise.all(
-        section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
-      )
+      if(section.block_order && Array.isArray(section.block_order) && block_order.length > 0){
+        section.blocks = section.block_order.map(it => section.blocks[it]);
+
+        //blocks settings
+        await Promise.all(
+          section.blocks.map(async block => LiquidView.parseSettings(engine, block, this.data))
+        )
+      }
 
       try{
         //render view, use shared template data and section data from json
@@ -170,8 +170,8 @@ export default class LiquidView extends View {
     if(template.wrapper){
       if(/{{.*}}|{%.*%}/.test(template.wrapper)){
         template.wrapper = await engine.render(
-            engine.parse(template.wrapper),
-            this.data
+          engine.parse(template.wrapper),
+          this.data
         );
       }
 
