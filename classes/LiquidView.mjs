@@ -8,6 +8,8 @@ import HelperConfig from './helpers/Config.mjs';
 import HelperLiquid from './helpers/Liquid.mjs';
 
 export default class LiquidView extends View {
+  static moduleSnippets = new Set();
+
   realPath = "";
   themePath = "";
   jsonTemplate = false;
@@ -37,6 +39,23 @@ export default class LiquidView extends View {
     super(`${file}.liquid`, data, default_file);
 
     this.realPath = this.resolveView(file, default_file);
+
+    if(LiquidView.moduleSnippets.size === 0){
+      //get all node packages from Central.nodePackages
+      //check if folder exists
+      [...Central.nodePackages.values()].reverse().forEach(it => {
+        const sectionPath = `${it}/views/sections`;
+        if(fs.existsSync(sectionPath)){
+          LiquidView.moduleSnippets.add(sectionPath);
+        }
+
+        const snippetPath = `${it}/views/snippets`;
+        if(fs.existsSync(snippetPath)){
+          LiquidView.moduleSnippets.add(snippetPath);
+        }
+      });
+    }
+
     //theme path may not in central view folder, eg: view in modules
     this.themePath = (/[\\/]views[\\/](layout|templates|sections)[\\/]/i.test(this.realPath)) ?
       path.normalize(this.realPath.replace(/[\\/]views[\\/](layout|templates|sections)[\\/].+$/, '/views')) :
@@ -49,8 +68,12 @@ export default class LiquidView extends View {
   }
 
   getEngine(){
+    const root = new Set(
+      [`${Central.VIEW_PATH}/sections`, `${Central.VIEW_PATH}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ]
+    );
+
     return new Liquid({
-      root: [`${Central.VIEW_PATH}/snippets`, `${this.themePath}/snippets`, `${this.themePath}/templates`, `${this.themePath}/sections`],
+      root: [...root.values()],
       extname: '.liquid',
       cache: !!Central.config.view?.cache,
       globals: this.data,
@@ -63,7 +86,12 @@ export default class LiquidView extends View {
     HelperLiquid.registerFilterTags(engine, this.data);
     const template = engine.parse(fs.readFileSync(this.realPath, 'utf8'));
 
-    return engine.render(template, this.data);
+    if(Central.config.system?.debug){
+      const text = await engine.render(template, this.data);
+      return  `<!-- view file: ${this.realPath} -->\n` + text;
+    }else{
+      return await engine.render(template, this.data);
+    }
   }
 
   static async parseSettings(engine, node, data){
@@ -108,7 +136,9 @@ export default class LiquidView extends View {
 
     if(!template.order || template.order.length === 0)return;
     const renders = {};
-    const engine = this.getEngine();
+    const engine = this.getEngine(
+      [`${this.themePath}/sections`]
+    );
 
     for(let key of template.order){
       const section = template.sections[key];
@@ -153,13 +183,7 @@ export default class LiquidView extends View {
       try{
         //render view, use shared template data and section data from json
         const view = await new LiquidView('sections/' + section.type, Object.assign({}, this.data, {section}));
-        if(Central.config.system?.debug){
-          const text = await view.render();
-          renders[key] = `<!-- view file: sections/${section.type} -->\n` + text;
-        }else{
-          renders[key] = await view.render();
-        }
-
+        renders[key] = await view.render();
       }catch(e){
         throw new Error(`${this.realPath} \n Error rendering section: ${section.type}: ${e.message}`);
       }
@@ -185,7 +209,7 @@ export default class LiquidView extends View {
     }
 
     if(Central.config.system?.debug){
-      return `<!-- begin json template: ${this.file} -->\n` + result + `\n<!-- end json template: ${this.file} -->`;
+      return `<!-- begin json template: ${this.realPath} -->\n` + result + `\n<!-- end json template: ${this.realPath} -->`;
     }
 
     return result;
