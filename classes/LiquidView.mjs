@@ -86,7 +86,7 @@ export default class LiquidView extends View {
     HelperLiquid.registerFilterTags(engine, this.data);
     const template = engine.parse(fs.readFileSync(this.realPath, 'utf8'));
 
-    if(Central.config.system?.debug){
+    if(Central.config.system?.debug && this.data.debug !== false){
       const text = await engine.render(template, this.data);
       return  `<!-- view file: ${this.realPath} -->\n` + text;
     }else{
@@ -208,7 +208,7 @@ export default class LiquidView extends View {
       }
     }
 
-    if(Central.config.system?.debug){
+    if(Central.config.system?.debug && this.data.debug !== false){
       return `<!-- begin json template: ${this.realPath} -->\n` + result + `\n<!-- end json template: ${this.realPath} -->`;
     }
 
