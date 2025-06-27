@@ -72,18 +72,19 @@ export default class LiquidView extends View {
       [`${Central.VIEW_PATH}/sections`, `${Central.VIEW_PATH}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ]
     );
 
-    return new Liquid({
+    const engine = new Liquid({
       root: [...root.values()],
       extname: '.liquid',
       cache: !!Central.config.view?.cache,
       globals: this.data,
-    })
+    });
+    HelperLiquid.registerFilterTags(engine, this.data);
+
+    return engine;
   }
 
   async liquidRender(){
     const engine = this.getEngine();
-
-    HelperLiquid.registerFilterTags(engine, this.data);
     const template = engine.parse(fs.readFileSync(this.realPath, 'utf8'));
 
     if(Central.config.system?.debug && this.data.debug !== false){
