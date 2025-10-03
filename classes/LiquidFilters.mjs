@@ -5,8 +5,8 @@ import crypto from 'node:crypto';
  */
 
 export default {
-  money: v => new Intl.NumberFormat('en', { style: 'currency', currency: 'HKD' }).format(v),
-  money_without_currency: v => new Intl.NumberFormat('en', { style: 'decimal' }).format(v),
+  money: (v, arg1="HKD", arg2="en") => new Intl.NumberFormat(arg2, { style: 'currency', currency: arg1 }).format(parseInt(v) / 100),
+  money_without_currency: (v, arg2="en") => new Intl.NumberFormat(arg2, { style: 'decimal' }).format(parseInt(v) / 100),
   script_tag: v => `<script src="${v}" type="text/javascript"></script>`,
   stylesheet_tag: v => `<link type="text/css" href="${v}" rel="stylesheet"/>`,
   asset_url: v => `/assets/${v}`,
