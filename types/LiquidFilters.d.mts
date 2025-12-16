@@ -1,0 +1,18 @@
+declare const _default: {
+    money: (v: string, arg1?: string, arg2?: string) => string;
+    money_without_currency: (v: string, arg2?: string) => string;
+    script_tag: (v: string) => string;
+    stylesheet_tag: (v: string) => string;
+    asset_url: (v: string) => string;
+    if: (v: any, arg1: any, arg2: any) => any;
+    within: (v: string, collection: any) => string;
+    to_time: (v: string) => number | "";
+    console_log: (v: any) => void;
+    parse_json: (v: string) => any;
+    map_get: (v: Map<any, any>, arg1: any) => any;
+    format_address: (v: any) => string;
+    md5: (v: string) => string;
+    random: (v: number) => number;
+    uuid: (v: any) => `${string}-${string}-${string}-${string}-${string}`;
+};
+export default _default;
