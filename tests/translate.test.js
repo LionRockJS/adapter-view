@@ -1,6 +1,6 @@
 import HelperTranslate from '../classes/helpers/translate.mjs';
 import {Central} from '@lionrockjs/central';
-import config from '../config/liquidjs.mjs';
+import config from '../classes/config/liquidjs.mjs';
 Central.config.liquidjs = config;
 Central.config.liquidjs.translates = {
   'en': { 'language': 'English', foo: {name:"foo"} },

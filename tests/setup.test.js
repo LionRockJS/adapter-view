@@ -11,7 +11,7 @@ import Schema from '../classes/liquid-tags/Schema';
 import Section from '../classes/liquid-tags/Section';
 
 await Central.initConfig(new Map([
-  ['liquidjs', await import('../config/liquidjs')],
+  ['liquidjs', await import('../classes/config/liquidjs.mjs')],
 ]));
 
 Central.classPath.set('LiquidTags.mjs', LiquidTags);
