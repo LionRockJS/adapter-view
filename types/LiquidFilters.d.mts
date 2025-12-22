@@ -1,6 +1,8 @@
 declare const _default: {
     money: (v: string, arg1?: string, arg2?: string) => string;
     money_without_currency: (v: string, arg2?: string) => string;
+    camelcase: (v: string) => string;
+    shopify_asset_url: (v: string) => string;
     script_tag: (v: string) => string;
     stylesheet_tag: (v: string) => string;
     asset_url: (v: string) => string;

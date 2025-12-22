@@ -3,6 +3,8 @@ import crypto from 'node:crypto';
 export default {
   money: (v: string, arg1: string = "HKD", arg2: string = "en") => new Intl.NumberFormat(arg2, { style: 'currency', currency: arg1 }).format(parseInt(v) / 100),
   money_without_currency: (v: string, arg2: string = "en") => new Intl.NumberFormat(arg2, { style: 'decimal' }).format(parseInt(v) / 100),
+  camelcase: (v: string) => v.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => word.toUpperCase()).replace(/[\s\-_]+/g, ''),
+  shopify_asset_url: (v: string) => `//cdn.shopify.com/s/shopify/${v}`,
   script_tag: (v: string) => `<script src="${v}" type="text/javascript"></script>`,
   stylesheet_tag: (v: string) => `<link type="text/css" href="${v}" rel="stylesheet"/>`,
   asset_url: (v: string) => `/assets/${v}`,

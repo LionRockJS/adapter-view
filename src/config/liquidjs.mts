@@ -1,5 +1,5 @@
-import Filters from '../classes/LiquidFilters.mjs';
-import Tags from '../classes/LiquidTags.mjs';
+import Filters from '../LiquidFilters.mjs';
+import Tags from '../LiquidTags.mjs';
 
 export default {
   tags: [
@@ -13,21 +13,22 @@ export default {
 
   filters: [
     {name:'asset_url', func: Filters.asset_url },
-    {name:'shopify_asset_url', func: Filters.shopify_asset_url },
+    {name:'shopify_asset_url', func: (Filters as any).shopify_asset_url },
     {name:'stylesheet_tag', func: Filters.stylesheet_tag },
     {name:'script_tag', func: Filters.script_tag },
-    {name:'camelcase', func: Filters.camelcase },
+    {name:'camelcase', func: (Filters as any).camelcase },
     {name:'money', func: Filters.money },
     {name:'money_without_currency', func: Filters.money_without_currency },
+    {name:'moneyWithoutCurrency', func: Filters.money_without_currency },
     {name:'if', func: Filters.if },
-    {name:'plural', func: Filters.plural },
-    {name:'singular', func: Filters.singular },
+    {name:'plural', func: (Filters as any).plural },
+    {name:'singular', func: (Filters as any).singular },
     {name:'within', func: Filters.within },
     {name:'to_time', func: Filters.to_time },
     {name:'parse_json', func: Filters.parse_json },
     {name:'map_get', func: Filters.map_get },
     {name:'format_address', func: Filters.format_address },
-    {name:'console_log', func: v => console.log(v) },
+    {name:'console_log', func: (v: any) => console.log(v) },
     {name:'md5', func: Filters.md5 },
     {name:'random', func: Filters.random },
     {name:'uuid', func: Filters.uuid },

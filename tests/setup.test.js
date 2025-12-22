@@ -43,7 +43,7 @@ describe('setup liquid', () => {
     const result = await view.render();
 
     expect(result.replace(/\r?\n|\r/g, '')).toBe(
-      'helloEnglishHK$100.00100NotOneLess<script src="fd" type="text/javascript"></script><link type="text/css" href="fff" rel="stylesheet"/>/assets/foo//cdn.shopify.com/s/shopify/foo{"foo":"bar"}TRUEFALSE',
+      'helloEnglishHK$1.001NotOneLess<script src="fd" type="text/javascript"></script><link type="text/css" href="fff" rel="stylesheet"/>/assets/foo//cdn.shopify.com/s/shopify/foo{"foo":"bar"}TRUEFALSE',
     );
   });
 
