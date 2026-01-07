@@ -21,37 +21,51 @@ export default class LiquidView extends View {
     try{
       this.file = file + '.json';
       fetchedView = Central.resolveView(this.file);
-      this.jsonTemplate = true;
-    }catch(e){
-      try{
-        this.file = file + '.liquid';
-        fetchedView = Central.resolveView(this.file);
-        this.jsonTemplate = false;
-      }catch(e){
-        if(default_file === "")throw e;
-        fetchedView = this.resolveView(default_file);
-        const ext = this.file.split('.').pop();
-        Central.viewPath.set(file + '.' + ext, fetchedView);
+      if(fetchedView){
+        this.jsonTemplate = true;
+        return fetchedView;
       }
-    }
+    }catch(e){}
+
+    try{
+      this.file = file + '.liquid';
+      fetchedView = Central.resolveView(this.file);
+      if(fetchedView){
+        this.jsonTemplate = false;
+        return fetchedView;
+      }
+    }catch(e){}
+
+    if(default_file === "")throw new Error(`View file not found: ${file}`);
+    
+    fetchedView = this.resolveView(default_file);
+    const ext = this.file.split('.').pop();
+    Central.viewPath.set(file + '.' + ext, fetchedView);
+
     return fetchedView;
   }
 
   constructor(file: string, data: any = {}, default_file: string = "") {
     super(`${file}.liquid`, data, default_file);
 
+    console.log(`LiquidView: loading view file: ${file+'.liquid'} ${Central.resolveView(file+'.liquid')}`);
+
     this.realPath = this.resolveView(file, default_file);
+    if(!this.realPath){
+      throw new Error(`View file not found: ${file}`);
+    }
 
     if(LiquidView.moduleSnippets.size === 0){
-      //get all node packages from Central.helperPath.modules.values
+      //get all node packages from Central.modules.values
       //check if folder exists
-      [...Central.helperPath.modules.values()].reverse().forEach((it: string) => {
-        const sectionPath = `${it}/views/sections`;
+      [...Central.modules.values()].reverse().forEach((it: any) => {
+        const modulePath = path.dirname(it.filename);
+        const sectionPath = `${modulePath}/../views/sections`;
         if(fs.existsSync(sectionPath)){
           LiquidView.moduleSnippets.add(sectionPath);
         }
 
-        const snippetPath = `${it}/views/snippets`;
+        const snippetPath = `${modulePath}/../views/snippets`;
         if(fs.existsSync(snippetPath)){
           LiquidView.moduleSnippets.add(snippetPath);
         }

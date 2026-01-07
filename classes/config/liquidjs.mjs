@@ -17,6 +17,7 @@ export default {
         { name: 'camelcase', func: Filters.camelcase },
         { name: 'money', func: Filters.money },
         { name: 'money_without_currency', func: Filters.money_without_currency },
+        { name: 'moneyWithoutCurrency', func: Filters.money_without_currency },
         { name: 'if', func: Filters.if },
         { name: 'plural', func: Filters.plural },
         { name: 'singular', func: Filters.singular },
