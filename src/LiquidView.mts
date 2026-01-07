@@ -43,9 +43,9 @@ export default class LiquidView extends View {
     this.realPath = this.resolveView(file, default_file);
 
     if(LiquidView.moduleSnippets.size === 0){
-      //get all node packages from Central.nodePackages
+      //get all node packages from Central.helperPath.modules.values
       //check if folder exists
-      [...Central.nodePackages.values()].reverse().forEach((it: string) => {
+      [...Central.helperPath.modules.values()].reverse().forEach((it: string) => {
         const sectionPath = `${it}/views/sections`;
         if(fs.existsSync(sectionPath)){
           LiquidView.moduleSnippets.add(sectionPath);
