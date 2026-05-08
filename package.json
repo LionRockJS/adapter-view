@@ -3,7 +3,7 @@
   "name": "@lionrockjs/adapter-view-liquidjs",
   "version": "2.0.0",
   "description": "The LionRockJS Web Platform support using LiquidJS",
-  "main": "classes/index.js",
+  "main": "dist/index.js",
   "types": "types/index.d.ts",
   "scripts": {
     "test": "bun test",
@@ -11,8 +11,8 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.4",
-    "typescript": "^5.0.0"
+    "@types/bun": "^1.3.13",
+    "typescript": "^6.0.3"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/LionRockJS/adapter-view#readme",
 
   "dependencies": {
-    "liquidjs": "^10.21.1",
+    "liquidjs": "^10.25.7",
     "emmet": "^2.4.11"
   }
 }

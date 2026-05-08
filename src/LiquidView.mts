@@ -13,42 +13,30 @@ export default class LiquidView extends View {
   realPath: string = "";
   themePath: string = "";
   jsonTemplate: boolean = false;
-  file: string = "";
   sectionFile: string = "";
 
   resolveView(file: string, default_file: string = ""): string {
-    let fetchedView: string;
-    try{
-      this.file = file + '.json';
-      fetchedView = Central.resolveView(this.file);
-      if(fetchedView){
-        this.jsonTemplate = true;
-        return fetchedView;
-      }
-    }catch(e){}
-
-    try{
-      this.file = file + '.liquid';
-      fetchedView = Central.resolveView(this.file);
-      if(fetchedView){
-        this.jsonTemplate = false;
-        return fetchedView;
-      }
-    }catch(e){}
-
-    if(default_file === "")throw new Error(`View file not found: ${file}`);
-    
-    fetchedView = this.resolveView(default_file);
-    const ext = this.file.split('.').pop();
-    Central.viewPath.set(file + '.' + ext, fetchedView);
-
-    return fetchedView;
+    const fetchedView: string = Central.resolveView(file);
+    const extname = path.extname(fetchedView || "").toLowerCase();
+    switch (extname) {
+        case '.json':
+            this.jsonTemplate = true;
+            return fetchedView;
+            break;
+        case '.liquid':
+            this.jsonTemplate = false;
+            return fetchedView;
+            break;
+        default:
+          if (default_file === "")throw new Error(`View file not found: ${file}`);
+          return this.resolveView(default_file);
+    }
   }
 
   constructor(file: string, data: any = {}, default_file: string = "") {
     super(`${file}.liquid`, data, default_file);
 
-    console.log(`LiquidView: loading view file: ${file+'.liquid'} ${Central.resolveView(file+'.liquid')}`);
+//    console.log(`LiquidView: loading view file: ${file+'.liquid'} ${Central.resolveView(file)}`);
 
     this.realPath = this.resolveView(file, default_file);
     if(!this.realPath){

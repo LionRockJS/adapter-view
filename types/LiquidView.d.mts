@@ -5,7 +5,6 @@ export default class LiquidView extends View {
     realPath: string;
     themePath: string;
     jsonTemplate: boolean;
-    file: string;
     sectionFile: string;
     resolveView(file: string, default_file?: string): string;
     constructor(file: string, data?: any, default_file?: string);
