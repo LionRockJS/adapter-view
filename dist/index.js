@@ -11,6 +11,8 @@ import LiquidTagsTag from './liquid-tags/Tag.mjs';
 import LiquidHelperConfig from './helpers/Config.mjs';
 import LiquidHelperLiquid from './helpers/Liquid.mjs';
 import HelperTranslate from './helpers/Translate.mjs';
+import { View } from '@lionrockjs/central';
+View.DefaultViewClass = LiquidView;
 export default {
     filename: import.meta.url,
     configs: ['liquidjs']
