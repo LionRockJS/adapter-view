@@ -4,49 +4,52 @@ import expand from 'emmet';
 import HelperConfig from './helpers/Config.mjs';
 import HelperLiquid from './helpers/Liquid.mjs';
 export default class LiquidView extends View {
+    static VIEW_PATH = "";
     static moduleSnippets = new Set();
+    resolvedView;
     realPath = "";
     themePath = "";
     jsonTemplate = false;
     sectionFile = "";
     resolveView(file, default_file = "") {
         const fetchedView = Central.resolveView(file);
-        const p = fetchedView || '';
-        const extname = p.match(/\.[^./\\]+$/)?.[0]?.toLowerCase() ?? '';
-        switch (extname) {
-            case '.json':
-                this.jsonTemplate = true;
-                return fetchedView;
-                break;
-            case '.liquid':
-                this.jsonTemplate = false;
-                return fetchedView;
-                break;
-            default:
-                if (default_file === "")
-                    throw new Error(`View file not found: ${file}`);
-                return this.resolveView(default_file);
+        if (typeof fetchedView.payload.default === 'object') {
+            this.jsonTemplate = true;
+            return fetchedView;
         }
+        if (typeof fetchedView.payload.default === 'string') {
+            this.jsonTemplate = false;
+            return fetchedView;
+        }
+        if (default_file === "")
+            throw new Error(`View file not found: ${file}`);
+        return this.resolveView(default_file);
     }
     constructor(file, data = {}, default_file = "") {
         super(`${file}.liquid`, data, default_file);
+        this.resolvedView = this.resolveView(file, default_file);
+        /*
         this.realPath = this.resolveView(file, default_file);
-        if (!this.realPath) {
-            throw new Error(`View file not found: ${file}`);
+        if(!this.realPath){
+          throw new Error(`View file not found: ${file}`);
         }
-        if (LiquidView.moduleSnippets.size === 0) {
-            //get all node packages from Central.modules.values
-            [...Central.modules.values()].reverse().forEach((it) => {
-                const sectionPath = new URL('../views/sections/', it.filename).pathname;
-                LiquidView.moduleSnippets.add(sectionPath);
-                const snippetPath = new URL('../views/snippets/', it.filename).pathname;
-                LiquidView.moduleSnippets.add(snippetPath);
-            });
+    
+        if(LiquidView.moduleSnippets.size === 0){
+          //get all node packages from Central.modules.values
+          [...Central.modules.values()].reverse().forEach((it: any) => {
+            const sectionPath = new URL('../views/sections/', it.filename).pathname;
+            LiquidView.moduleSnippets.add(sectionPath);
+    
+            const snippetPath = new URL('../views/snippets/', it.filename).pathname;
+            LiquidView.moduleSnippets.add(snippetPath);
+          });
         }
+    
         //theme path may not in central view folder, eg: view in modules
         this.themePath = (/[\\/]views[\\/](layout|templates|sections)[\\/]/i.test(this.realPath))
-            ? this.realPath.replace(/[\\/]views[\\/](layout|templates|sections)[\\/].+$/, '/views')
-            : this.realPath.replace(/[/\\][^/\\]*$/, '') || '.';
+          ? this.realPath.replace(/[\\/]views[\\/](layout|templates|sections)[\\/].+$/, '/views')
+          : this.realPath.replace(/[/\\][^/\\]*$/, '') || '.';
+        */
     }
     async ensureSettings() {
         if (this.data.settings !== undefined)
@@ -57,7 +60,7 @@ export default class LiquidView extends View {
         Object.assign(this.data, { settings: settings.current });
     }
     getEngine(extraRoot = []) {
-        const root = new Set([`${Central.VIEW_PATH}/sections`, `${Central.VIEW_PATH}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ...extraRoot]);
+        const root = new Set([`${LiquidView.VIEW_PATH}/sections`, `${LiquidView.VIEW_PATH}}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ...extraRoot]);
         const engine = new Liquid({
             root: [...root.values()],
             extname: '.liquid',
@@ -69,7 +72,7 @@ export default class LiquidView extends View {
     }
     async liquidRender() {
         const engine = this.getEngine();
-        const { default: content } = await import(this.realPath, { with: { type: 'text' } });
+        const content = this.resolvedView.payload.default || this.resolvedView.payload;
         const template = engine.parse(content);
         if (Central.config.system?.debug && this.data.debug !== false) {
             const text = await engine.render(template, this.data);
@@ -95,17 +98,8 @@ export default class LiquidView extends View {
             }
         }
     }
-    async readJSON(file) {
-        try {
-            const { default: content } = await import(file, { with: { type: 'json' } });
-            return content;
-        }
-        catch (e) {
-            throw new Error(`Error parsing JSON file: ${file}: ${e.message}`);
-        }
-    }
     async jsonRender() {
-        const template = await this.readJSON(this.realPath);
+        const template = this.resolvedView.payload.default || this.resolvedView.payload;
         if (!template.order || template.order.length === 0)
             return;
         const renders = {};

@@ -12,8 +12,47 @@ import LiquidHelperConfig from './helpers/Config.mjs';
 import LiquidHelperLiquid from './helpers/Liquid.mjs';
 import HelperTranslate from './helpers/Translate.mjs';
 declare const _default: {
-    filename: string;
-    configs: string[];
+    configs: {
+        liquidjs: {
+            tags: ({
+                name: string;
+                tag: LiquidTagsStyle;
+            } | {
+                name: string;
+                tag: {
+                    html: string[];
+                    liquid: any;
+                    parse(token: any, remainTokens: any): void;
+                    render(ctx: any, emitter: any): Generator<never, void, unknown>;
+                };
+            } | {
+                name: string;
+                tag: {
+                    type: string;
+                    parse(token: any, remainTokens: any): void;
+                    render(ctx: any, emitter: any): Generator<any, void, unknown>;
+                };
+            } | {
+                name: string;
+                tag: typeof LiquidTagsSchema;
+            })[];
+            filters: {
+                name: string;
+                func: any;
+            }[];
+            translates: {
+                en: {
+                    language: string;
+                };
+                'zh-hant': {
+                    language: string;
+                };
+                'zh-hans': {
+                    language: string;
+                };
+            };
+        };
+    };
 };
 export default _default;
 export { LiquidView, LiquidTags, LiquidFilters, LiquidTagsForm, LiquidTagsPaginate, LiquidTagsSchema, LiquidTagsSection, LiquidTagsStub, LiquidTagsStyle, LiquidTagsTag, LiquidHelperConfig, LiquidHelperLiquid, HelperTranslate, };

@@ -1,4 +1,4 @@
-import { Central, HelperCache } from '@lionrockjs/central';
+import { Central } from '@lionrockjs/central';
 import HelperTranslate from "./Translate.mjs";
 
 export default class HelperLiquid {
@@ -9,7 +9,7 @@ export default class HelperLiquid {
     Central.config.liquidjs.filters.forEach((filter: any) => engine.registerFilter(filter.name, filter.func));
     Central.config.liquidjs.tags.forEach((tag: any) => engine.registerTag(tag.name, tag.tag));
 
-    if(this.cacheId !== HelperCache.cacheId)HelperTranslate.update();
+    if(this.cacheId !== Central.cacheId)HelperTranslate.update();
     engine.registerFilter('t', (v: any) => `${HelperTranslate.t(v, data.language)}`);
   }
 

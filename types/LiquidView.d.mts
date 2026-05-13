@@ -1,7 +1,9 @@
 import { View } from "@lionrockjs/central";
 import { Liquid } from 'liquidjs';
 export default class LiquidView extends View {
+    static VIEW_PATH: string;
     static moduleSnippets: Set<string>;
+    resolvedView: any;
     realPath: string;
     themePath: string;
     jsonTemplate: boolean;
@@ -12,7 +14,6 @@ export default class LiquidView extends View {
     getEngine(extraRoot?: string[]): Liquid;
     liquidRender(): Promise<any>;
     static parseSettings(engine: any, node: any, data: any): Promise<void>;
-    readJSON(file: string): Promise<any>;
     jsonRender(): Promise<any>;
     render(): Promise<any>;
 }
