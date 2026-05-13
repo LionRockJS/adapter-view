@@ -1,24 +1,24 @@
-import fs from 'node:fs';
-const loadSettings = (themePath, sectionFile) => {
+const loadSettings = async (themePath, sectionFile) => {
     if (!themePath)
         return { current: {} };
-    // TODO: cache config
     const configPath = `${themePath}/config/settings_data.json`;
-    if (!fs.existsSync(configPath))
-        return { current: {} };
-    const configText = fs.readFileSync(configPath, 'utf8');
-    const config = JSON.parse(configText);
-    if (!config)
-        return { current: {} };
-    if (config.current === 'Default') {
-        config.current = config.presets.Default;
+    try {
+        const { default: config } = await import(configPath, { with: { type: 'json' } });
+        if (!config)
+            return { current: {} };
+        if (config.current === 'Default') {
+            config.current = config.presets.Default;
+        }
+        return config;
     }
-    return config;
+    catch {
+        return { current: {} };
+    }
 };
-const loadSectionSettings = (themePath, sectionName) => {
+const loadSectionSettings = async (themePath, sectionName) => {
     if (!themePath)
         return {};
-    const config = loadSettings(themePath);
+    const config = await loadSettings(themePath);
     config.current.sections = config.current.sections || {};
     config.current.sections[sectionName] = config.current.sections[sectionName] || {};
     // get the section setting

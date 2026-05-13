@@ -12,6 +12,7 @@ import LiquidHelperConfig from './helpers/Config.mjs';
 import LiquidHelperLiquid from './helpers/Liquid.mjs';
 import HelperTranslate from './helpers/Translate.mjs';
 
+// run once
 import { View } from '@lionrockjs/central';
 View.DefaultViewClass = LiquidView;
 
