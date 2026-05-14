@@ -60,12 +60,39 @@ export default class LiquidView extends View {
         Object.assign(this.data, { settings: settings.current });
     }
     getEngine(extraRoot = []) {
-        const root = new Set([`${LiquidView.VIEW_PATH}/sections`, `${LiquidView.VIEW_PATH}}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ...extraRoot]);
+        const root = new Set([`${LiquidView.VIEW_PATH}/sections`, `${LiquidView.VIEW_PATH}/snippets`, ...LiquidView.moduleSnippets.values(), `${this.themePath}/sections`, `${this.themePath}/snippets`, ...extraRoot]);
+        const viewFs = {
+            readFileSync(file) {
+                const entry = Central.viewFiles.get(file);
+                if (!entry)
+                    throw new Error(`View not found: ${file}`);
+                return entry.payload.default ?? entry.payload;
+            },
+            async readFile(file) {
+                const entry = Central.viewFiles.get(file);
+                if (!entry)
+                    throw new Error(`View not found: ${file}`);
+                return entry.payload.default ?? entry.payload;
+            },
+            existsSync(file) {
+                return Central.viewFiles.has(file);
+            },
+            async exists(file) {
+                return Central.viewFiles.has(file);
+            },
+            async contains() {
+                return true;
+            },
+            resolve(_root, file, ext) {
+                return file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+            }
+        };
         const engine = new Liquid({
             root: [...root.values()],
             extname: '.liquid',
             cache: !!Central.config.view?.cache,
             globals: this.data,
+            fs: viewFs,
         });
         HelperLiquid.registerFilterTags(engine, this.data);
         return engine;

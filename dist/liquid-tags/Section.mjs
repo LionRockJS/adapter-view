@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import { Liquid } from 'liquidjs';
 import { Central } from '@lionrockjs/central';
 import TagSchema from './Schema.mjs';
@@ -22,14 +21,44 @@ export default class SectionTag {
         this.token = token;
         const args = token.args.split(',').map((x) => x.trim());
         this.sectionFile = args[0].replace(/(^')|('$)/gi, '');
-        this.file = `${this.themePath}/sections/${this.sectionFile}.liquid`;
-        this.content = fs.readFileSync(this.file, 'utf8');
+        this.file = `sections/${this.sectionFile}`;
+        const sectionEntry = Central.viewFiles.get(this.file);
+        if (!sectionEntry)
+            throw new Error(`Section not found: ${this.file}`);
+        this.content = sectionEntry.payload.default ?? sectionEntry.payload;
+        const viewFs = {
+            readFileSync(file) {
+                const entry = Central.viewFiles.get(file);
+                if (!entry)
+                    throw new Error(`View not found: ${file}`);
+                return entry.payload.default ?? entry.payload;
+            },
+            async readFile(file) {
+                const entry = Central.viewFiles.get(file);
+                if (!entry)
+                    throw new Error(`View not found: ${file}`);
+                return entry.payload.default ?? entry.payload;
+            },
+            existsSync(file) {
+                return Central.viewFiles.has(file);
+            },
+            async exists(file) {
+                return Central.viewFiles.has(file);
+            },
+            async contains() {
+                return true;
+            },
+            resolve(_root, file, ext) {
+                return file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+            }
+        };
         //        console.log('section',  this.liquid.options.globals, this.sectionFile);
         this.engine = new Liquid({
-            root: `${this.themePath}/snippets/`,
+            root: [''],
             extname: '.liquid',
             cache: !!Central.config.view.cache,
             globals: this.liquid.options.globals,
+            fs: viewFs,
         });
         HelperLiquid.registerTags(this.engine);
         this.engine.registerTag('schema', new TagSchema(this.themePath, { section: this.sectionFile, sectionConfig: this.config }, this.engine));
