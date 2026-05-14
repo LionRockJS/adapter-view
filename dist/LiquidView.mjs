@@ -84,7 +84,12 @@ export default class LiquidView extends View {
                 return true;
             },
             resolve(_root, file, ext) {
-                return file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+                const fileKey = file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+                const folder = _root.split('/').pop();
+                if ((folder === 'sections' || folder === 'snippets') && !fileKey.startsWith(`${folder}/`)) {
+                    return `${folder}/${fileKey}`;
+                }
+                return fileKey;
             }
         };
         const engine = new Liquid({
