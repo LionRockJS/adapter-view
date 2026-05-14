@@ -51,13 +51,18 @@ export default class SectionTag {
         return true;
       },
       resolve(_root: string, file: string, ext: string): string {
-        return file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+        const fileKey = file.endsWith(ext) ? file.slice(0, -ext.length) : file;
+        const folder = _root.split('/').pop();
+        if ((folder === 'sections' || folder === 'snippets') && !fileKey.startsWith(`${folder}/`)) {
+          return `${folder}/${fileKey}`;
+        }
+        return fileKey;
       }
     };
 
     //        console.log('section',  this.liquid.options.globals, this.sectionFile);
     this.engine = new Liquid({
-      root: [''],
+      root: ['snippets'],
       extname: '.liquid',
       cache: !!Central.config.view.cache,
       globals: (this as any).liquid.options.globals,
