@@ -64,6 +64,7 @@ export default class SectionTag {
             cache: !!Central.config.view.cache,
             globals: this.liquid.options.globals,
             fs: viewFs,
+            relativeReference: false,
         });
         HelperLiquid.registerTags(this.engine);
         this.engine.registerTag('schema', new TagSchema(this.themePath, { section: this.sectionFile, sectionConfig: this.config }, this.engine));

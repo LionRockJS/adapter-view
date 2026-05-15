@@ -18,10 +18,14 @@ export default class LiquidView extends View {
 
   resolveView(file: string, default_file: string = ""): string {
     const fetchedView: any = Central.resolveView(file);
+    if(!fetchedView) {
+      if(default_file === "")throw new Error(`View file not found: ${file}`);
+      return this.resolveView(default_file);
+    }
 
     if(typeof fetchedView.payload.default === 'object'){
       this.jsonTemplate = true;
-      return fetchedView;     
+      return fetchedView;
     }
 
     if(typeof fetchedView.payload.default === 'string'){
@@ -29,8 +33,7 @@ export default class LiquidView extends View {
       return fetchedView;
     }
 
-    if(default_file === "")throw new Error(`View file not found: ${file}`);
-    return this.resolveView(default_file);
+    throw new Error(`LiquidView: cannot resolve view "${file}" — payload.default is ${JSON.stringify(fetchedView.payload.default)} (type: ${typeof fetchedView.payload.default})`);
   }
 
   constructor(file: string, data: any = {}, default_file: string = "") {
@@ -109,6 +112,7 @@ export default class LiquidView extends View {
       cache: !!Central.config.view?.cache,
       globals: this.data,
       fs: viewFs,
+      relativeReference: false,
     });
     HelperLiquid.registerFilterTags(engine, this.data);
 
@@ -117,6 +121,7 @@ export default class LiquidView extends View {
 
   async liquidRender(){
     const engine = this.getEngine();
+    if(!this.resolvedView?.payload) throw new Error(`LiquidView: resolved view payload is undefined for view "${this.file}" (realPath: "${this.realPath}")`);
     const content = this.resolvedView.payload.default || this.resolvedView.payload;
 
     const template = engine.parse(content);
